@@ -48,32 +48,39 @@ export default function UserCard({ user }: UserCardProps) {
       <div className="p-5">
         <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{user.displayName}</h3>
 
-        {/* Dining Hall & Swipes */}
-        <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-          <div className="text-center flex-1">
-            <div className="text-2xl mb-1">📍</div>
-            <div className="font-bold text-gray-900 text-sm">{user.diningHall}</div>
+        {/* Dining Hall, Swipes & Payment Rate */}
+        <div className="grid grid-cols-3 gap-2 mb-4 pb-4 border-b border-gray-200">
+          <div className="text-center">
+            <div className="text-xl mb-1">📍</div>
+            <div className="font-bold text-gray-900 text-xs">{user.diningHall}</div>
           </div>
-          <div className="w-px h-12 bg-gray-200"></div>
-          <div className="text-center flex-1">
+          <div className="text-center">
             <div className="font-bold text-purple-600 text-2xl mb-1">
               {user.swipeCount}
             </div>
             <div className="text-xs text-gray-600">Swipes</div>
           </div>
+          <div className="text-center">
+            {user.paymentRate ? (
+              <>
+                <div className="font-bold text-green-600 text-xl mb-1">${user.paymentRate}</div>
+                <div className="text-xs text-gray-600">per swipe</div>
+              </>
+            ) : (
+              <>
+                <div className="font-bold text-green-600 text-xl mb-1">FREE</div>
+                <div className="text-xs text-gray-600">no charge</div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Phone Number */}
-        {user.phone && (
-          <div className="text-center">
-            <a 
-              href={`tel:${user.phone}`} 
-              className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors"
-            >
-              📞 {formatPhoneNumber(user.phone)}
-            </a>
+        <div className="text-center">
+          <div className="inline-flex items-center gap-2 text-gray-700 font-semibold">
+            📞 {formatPhoneNumber(user.phone)}
           </div>
-        )}
+        </div>
 
         {/* Timestamp */}
         <div className="mt-4 text-xs text-gray-400 text-center">

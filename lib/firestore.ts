@@ -26,6 +26,7 @@ const convertToUserProfile = (id: string, data: any): UserProfile => {
     diningHall: data.diningHall,
     userType: data.userType || 'swiper',
     swipeCount: data.swipeCount || 0,
+    paymentRate: data.paymentRate,
     isActive: data.isActive ?? true,
     createdAt: data.createdAt?.toDate() || new Date(),
     updatedAt: data.updatedAt?.toDate() || new Date(),

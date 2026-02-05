@@ -54,7 +54,7 @@ export default function Home() {
       const newHall: DiningHall = userProfile.diningHall === 'Brandywine' ? 'Anteatery' : 'Brandywine';
       await updateDiningHall(user.uid, newHall);
       setUserProfile({ ...userProfile, diningHall: newHall });
-      await loadUsers(); // Refresh the list
+      await loadUsers();
     } catch (error) {
       console.error('Error updating dining hall:', error);
       alert('Failed to update dining hall');
@@ -70,7 +70,7 @@ export default function Home() {
       const newStatus = !userProfile.isActive;
       await toggleActiveStatus(user.uid, newStatus);
       setUserProfile({ ...userProfile, isActive: newStatus });
-      await loadUsers(); // Refresh the list
+      await loadUsers();
     } catch (error) {
       console.error('Error toggling active status:', error);
       alert('Failed to update status');
@@ -80,138 +80,152 @@ export default function Home() {
   };
 
   const filteredUsers = users.filter((u) => {
-    // Only show swipers (people offering swipes)
     if (u.userType === 'swiped') return false;
-    
     if (filter === 'active') return u.isActive;
     if (filter === 'inactive') return !u.isActive;
     return true;
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
       <Navbar />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-28">
-        {/* Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 text-gray-900">
-            Meal Swipe Marketplace
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+        {/* Hero Section */}
+        <div className="text-center mb-16 sm:mb-20 max-w-4xl mx-auto">
+          <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 tracking-tight" style={{ color: 'var(--foreground)' }}>
+            Share meals,<br />build community
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-            Connect with fellow UCI students to share meal swipes
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'var(--muted)', fontStyle: 'italic' }}>
+           Something like that  
           </p>
         </div>
 
         {/* User Quick Controls - Only for Swipers */}
         {user && userProfile && userProfile.userType === 'swiper' && (
-          <div className="bg-white rounded-xl p-6 mb-10 max-w-2xl mx-auto border border-gray-200 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Quick Controls</h3>
+          <div className="bento-card p-6 sm:p-8 mb-12 max-w-2xl mx-auto">
+            <h3 className="font-serif text-xl font-semibold mb-6 text-center" style={{ color: 'var(--foreground)' }}>
+              Your Quick Controls
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Location Toggle */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Your Location</label>
+                <label className="block text-sm font-medium mb-3" style={{ color: 'var(--muted)' }}>Location</label>
                 <button
                   onClick={handleToggleLocation}
                   disabled={updating}
-                  className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-all ${
-                    userProfile.diningHall === 'Brandywine'
-                      ? 'bg-purple-600 text-white hover:bg-purple-700'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`soft-button w-full ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {userProfile.diningHall === 'Brandywine' ? '🏢 Brandywine' : '🍽️ Anteatery'}
+                  <span className="mr-2">{userProfile.diningHall === 'Brandywine' ? '🏢' : '🍽️'}</span>
+                  {userProfile.diningHall}
                 </button>
               </div>
 
               {/* Active Status Toggle */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Visibility</label>
+                <label className="block text-sm font-medium mb-3" style={{ color: 'var(--muted)' }}>Visibility</label>
                 <button
                   onClick={handleToggleActive}
                   disabled={updating}
-                  className={`w-full py-2 px-4 rounded-lg font-medium text-sm ${
-                    userProfile.isActive
-                      ? 'bg-green-500 text-white hover:bg-green-600 '
-                      : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`soft-button w-full ${userProfile.isActive ? 'border-emerald-400 bg-emerald-50' : ''} ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {userProfile.isActive ? '● Active' : '○ Inactive'}
+                  <span className="mr-2">{userProfile.isActive ? '●' : '○'}</span>
+                  {userProfile.isActive ? 'Active' : 'Inactive'}
+                  {userProfile.isActive && <span className="ml-2 inline-block w-2 h-2 rounded-full bg-emerald-500 pulse-soft"></span>}
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Call to Action */}
+        {/* Call to Action - Bento Style */}
         {!user && (
-          <div className="bg-white rounded-xl p-8 sm:p-10 mb-10 text-center max-w-2xl mx-auto border border-gray-200 shadow-sm">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-              Share or Find Swipes
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Join the community and start connecting with other students
-            </p>
-            <a
-              href="/auth"
-              className="inline-block px-8 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all"
-            >
-              Get Started →
-            </a>
+          <div className="bento-card p-8 sm:p-12 mb-12 text-center max-w-2xl mx-auto relative overflow-hidden">
+            {/* Organic background shape */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[--accent-light]/10 organic-shape -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[--accent]/5 organic-shape translate-y-12 -translate-x-12"></div>
+            
+            <div className="relative">
+              <h2 className="font-serif text-3xl sm:text-4xl font-semibold mb-4 tracking-tight" style={{ color: 'var(--foreground)' }}>
+                Join the marketplace
+              </h2>
+              <p className="mb-8 leading-relaxed" style={{ color: 'var(--muted)' }}>
+                Share your extra swipes or find someone nearby.<br />
+                It takes less than a minute to get started.
+              </p>
+              <a
+                href="/auth"
+                className="accent-button inline-block"
+              >
+                Sign in with Google →
+              </a>
+            </div>
           </div>
         )}
 
-        {/* Filters */}
-        <div className="bg-white rounded-xl p-2 mb-10 max-w-md mx-auto border border-gray-200 shadow-sm">
-          <div className="flex gap-2 justify-center">
-            <button
-              onClick={() => setFilter('active')}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${
-                filter === 'active'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              Active <span className="text-xs opacity-75">({users.filter((u) => u.userType === 'swiper' && u.isActive).length})</span>
-            </button>
-            <button
-              onClick={() => setFilter('all')}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${
-                filter === 'all'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              All <span className="text-xs opacity-75">({users.filter((u) => u.userType === 'swiper').length})</span>
-            </button>
-            <button
-              onClick={() => setFilter('inactive')}
-              className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-all ${
-                filter === 'inactive'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              Inactive <span className="text-xs opacity-75">({users.filter((u) => u.userType === 'swiper' && !u.isActive).length})</span>
-            </button>
-          </div>
+        {/* Filter Pills */}
+        <div className="flex gap-3 justify-center mb-12 flex-wrap">
+          <button
+            onClick={() => setFilter('active')}
+            className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm cursor-pointer ${
+              filter === 'active'
+                ? 'text-white shadow-md'
+                : 'soft-button'
+            }`}
+            style={filter === 'active' ? { backgroundColor: 'var(--accent)' } : undefined}
+          >
+            Active
+            <span className="ml-2 opacity-70 text-xs">
+              {users.filter((u) => u.userType === 'swiper' && u.isActive).length}
+            </span>
+          </button>
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm cursor-pointer ${
+              filter === 'all'
+                ? 'text-white shadow-md'
+                : 'soft-button'
+            }`}
+            style={filter === 'all' ? { backgroundColor: 'var(--accent)' } : undefined}
+          >
+            All
+            <span className="ml-2 opacity-70 text-xs">
+              {users.filter((u) => u.userType === 'swiper').length}
+            </span>
+          </button>
+          <button
+            onClick={() => setFilter('inactive')}
+            className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm cursor-pointer ${
+              filter === 'inactive'
+                ? 'text-white shadow-md'
+                : 'soft-button'
+            }`}
+            style={filter === 'inactive' ? { backgroundColor: 'var(--accent)' } : undefined}
+          >
+            Inactive
+            <span className="ml-2 opacity-70 text-xs">
+              {users.filter((u) => u.userType === 'swiper' && !u.isActive).length}
+            </span>
+          </button>
         </div>
 
         {/* Users Grid */}
         {loading ? (
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-            <p className="mt-4 text-gray-600">Loading swipes...</p>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-2 border-[--accent] border-t-transparent"></div>
+            <p className="mt-6 font-medium" style={{ color: 'var(--muted)' }}>Loading swipes...</p>
           </div>
         ) : filteredUsers.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-xl border border-gray-200 shadow-sm max-w-lg mx-auto">
-            <div className="text-6xl mb-4">🍽️</div>
-            <p className="text-xl text-gray-600">
+          <div className="bento-card text-center py-16 max-w-lg mx-auto">
+            <div className="text-6xl mb-4 opacity-30">🍽️</div>
+            <h3 className="font-serif text-2xl font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+              No swipes available
+            </h3>
+            <p style={{ color: 'var(--muted)' }}>
               {filter === 'active'
-                ? 'No active users right now'
-                : 'No users found'}
+                ? 'No active users right now. Check back soon!'
+                : 'Be the first to share your swipes'}
             </p>
-            <p className="text-sm text-gray-500 mt-2">Check back soon!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

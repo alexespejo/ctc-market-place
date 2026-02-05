@@ -6,12 +6,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
 
 export default function AuthPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { user, signIn, signUp, signInWithGoogle } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,25 +16,6 @@ export default function AuthPage() {
       router.push('/profile');
     }
   }, [user, router]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      if (isSignUp) {
-        await signUp(email, password);
-      } else {
-        await signIn(email, password);
-      }
-      router.push('/profile');
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleGoogleSignIn = async () => {
     setError('');
@@ -65,14 +43,14 @@ export default function AuthPage() {
           {/* Header */}
           <div className="bg-purple-600 p-8 sm:p-10 text-white text-center">
             <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-              {isSignUp ? 'Create Account' : 'Welcome Back'}
+              Welcome to UCI Swipes
             </h1>
             <p className="text-purple-100 text-sm">
-              {isSignUp ? 'Join the UCI Meal Swipe community' : 'Sign in to your account'}
+              Sign in with your UCI Google account to continue
             </p>
           </div>
 
-          <div className="p-6 sm:p-8">
+          <div className="p-8 sm:p-10">
             {error && (
               <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
                 <p className="text-sm text-red-600 font-medium">{error}</p>
@@ -83,9 +61,9 @@ export default function AuthPage() {
             <button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full flex items-center justify-center space-x-3 py-3.5 px-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-6"
+              className="w-full flex items-center justify-center space-x-3 py-4 px-6 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -103,73 +81,17 @@ export default function AuthPage() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              <span className="font-semibold text-gray-700">Continue with Google</span>
+              <span className="font-bold text-gray-800 text-lg">
+                {loading ? 'Signing in...' : 'Continue with Google'}
+              </span>
             </button>
 
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-3 bg-white text-gray-500">Or continue with email</span>
-              </div>
-            </div>
-
-            {/* Email/Password Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
-                  placeholder="you@uci.edu"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
-                  placeholder="••••••••"
-                  minLength={6}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 px-4 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
-              >
-                {loading ? 'Loading...' : isSignUp ? '→ Create Account' : '→ Sign In'}
-              </button>
-            </form>
-
-            {/* Toggle Sign Up/Sign In */}
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => {
-                  setIsSignUp(!isSignUp);
-                  setError('');
-                }}
-                className="text-purple-600 hover:text-purple-700 font-semibold text-sm transition-colors"
-              >
-                {isSignUp
-                  ? 'Already have an account? Sign In'
-                  : "Don't have an account? Sign Up"}
-              </button>
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800 text-center">
+                <span className="font-semibold">⚠️ UCI Students Only</span>
+                <br />
+                You must use your UCI Google account (@uci.edu)
+              </p>
             </div>
           </div>
         </div>

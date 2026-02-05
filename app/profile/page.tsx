@@ -145,34 +145,36 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Active Status Toggle */}
-            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Visibility Status</h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {profile.isActive
-                      ? '● Visible to students'
-                      : '○ Hidden from marketplace'}
-                  </p>
+            {/* Active Status Toggle - Only for Swipers */}
+            {profile.userType === 'swiper' && (
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Visibility Status</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {profile.isActive
+                        ? '● Visible to students'
+                        : '○ Hidden from marketplace'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleToggleActive}
+                    disabled={updating}
+                    className={`relative inline-flex h-11 w-20 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      profile.isActive 
+                        ? 'bg-green-500 focus:ring-green-500' 
+                        : 'bg-gray-300 focus:ring-gray-400'
+                    } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span
+                      className={`inline-block h-9 w-9 transform rounded-full bg-white shadow-lg transition-transform ${
+                        profile.isActive ? 'translate-x-10' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
                 </div>
-                <button
-                  onClick={handleToggleActive}
-                  disabled={updating}
-                  className={`relative inline-flex h-11 w-20 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    profile.isActive 
-                      ? 'bg-green-500 focus:ring-green-500' 
-                      : 'bg-gray-300 focus:ring-gray-400'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <span
-                    className={`inline-block h-9 w-9 transform rounded-full bg-white shadow-lg transition-transform ${
-                      profile.isActive ? 'translate-x-10' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
               </div>
-            </div>
+            )}
 
             {/* Dining Hall Selection */}
             <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
@@ -203,32 +205,50 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Swipe Counter */}
-            <div className="bg-purple-50 rounded-lg p-8 border border-purple-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Available Meal Swipes</h3>
-              <div className="flex items-center justify-center space-x-6 sm:space-x-8">
-                <button
-                  onClick={() => handleSwipeChange(-1)}
-                  disabled={updating || profile.swipeCount === 0}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500 text-white text-2xl sm:text-3xl font-bold hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
-                >
-                  −
-                </button>
-                <div className="text-center min-w-[120px]">
-                  <div className="text-6xl sm:text-7xl font-bold text-purple-600">
-                    {profile.swipeCount}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-2 font-medium">Swipes</div>
-                </div>
-                <button
-                  onClick={() => handleSwipeChange(1)}
-                  disabled={updating}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500 text-white text-2xl sm:text-3xl font-bold hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
-                >
-                  +
-                </button>
+            {/* User Type Badge */}
+            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 text-center">
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
+                profile.userType === 'swiper'
+                  ? 'bg-purple-100 text-purple-700'
+                  : 'bg-blue-100 text-blue-700'
+              }`}>
+                {profile.userType === 'swiper' ? '🎫 Swiper' : '🔍 Swiped'}
               </div>
+              <p className="text-sm text-gray-600 mt-2">
+                {profile.userType === 'swiper' 
+                  ? 'You are sharing swipes with others'
+                  : 'You are looking for swipes'}
+              </p>
             </div>
+
+            {/* Swipe Counter - Only for Swipers */}
+            {profile.userType === 'swiper' && (
+              <div className="bg-purple-50 rounded-lg p-8 border border-purple-100">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Available Meal Swipes</h3>
+                <div className="flex items-center justify-center space-x-6 sm:space-x-8">
+                  <button
+                    onClick={() => handleSwipeChange(-1)}
+                    disabled={updating || profile.swipeCount === 0}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500 text-white text-2xl sm:text-3xl font-bold hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                  >
+                    −
+                  </button>
+                  <div className="text-center min-w-[120px]">
+                    <div className="text-6xl sm:text-7xl font-bold text-purple-600">
+                      {profile.swipeCount}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-2 font-medium">Swipes</div>
+                  </div>
+                  <button
+                    onClick={() => handleSwipeChange(1)}
+                    disabled={updating}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500 text-white text-2xl sm:text-3xl font-bold hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Edit Profile Button */}
             <div className="pt-2">

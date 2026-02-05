@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserProfile, createOrUpdateUserProfile } from '@/lib/firestore';
-import { DiningHall } from '@/lib/types';
+import { DiningHall, UserType } from '@/lib/types';
 import Navbar from '@/components/Navbar';
 
 export default function CreateProfilePage() {
@@ -18,6 +18,7 @@ export default function CreateProfilePage() {
     phone: '',
     photoURL: '',
     diningHall: 'Brandywine' as DiningHall,
+    userType: 'swiper' as UserType,
     swipeCount: 0,
     isActive: true,
   });
@@ -44,6 +45,7 @@ export default function CreateProfilePage() {
           phone: profile.phone || '',
           photoURL: profile.photoURL || '',
           diningHall: profile.diningHall,
+          userType: profile.userType,
           swipeCount: profile.swipeCount,
           isActive: profile.isActive,
         });
@@ -146,6 +148,39 @@ export default function CreateProfilePage() {
               </div>
             </div>
 
+            {/* User Type Toggle */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                I am a *
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, userType: 'swiper' })}
+                  className={`p-4 rounded-lg font-semibold transition-all border-2 ${
+                    formData.userType === 'swiper'
+                      ? 'bg-purple-600 text-white border-purple-600'
+                      : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  🎫 Swiper
+                  <p className="text-xs mt-1 opacity-80">I have swipes to share</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, userType: 'swiped' })}
+                  className={`p-4 rounded-lg font-semibold transition-all border-2 ${
+                    formData.userType === 'swiped'
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  🔍 Swiped
+                  <p className="text-xs mt-1 opacity-80">I'm looking for swipes</p>
+                </button>
+              </div>
+            </div>
+
             {/* Display Name */}
             <div>
               <label htmlFor="displayName" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -211,63 +246,67 @@ export default function CreateProfilePage() {
               </div>
             </div>
 
-            {/* Swipe Count */}
-            <div>
-              <label htmlFor="swipeCount" className="block text-sm font-semibold text-gray-700 mb-2">
-                Initial Swipe Count *
-              </label>
-              <div className="flex items-center space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, swipeCount: Math.max(0, formData.swipeCount - 1) })}
-                  className="w-12 h-12 rounded-full bg-red-500 text-white text-xl font-bold hover:bg-red-600 transition-all"
-                >
-                  −
-                </button>
-                <input
-                  type="number"
-                  id="swipeCount"
-                  min="0"
-                  value={formData.swipeCount}
-                  onChange={(e) => setFormData({ ...formData, swipeCount: Math.max(0, parseInt(e.target.value) || 0) })}
-                  className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-center text-3xl font-bold focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-purple-600"
-                />
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, swipeCount: formData.swipeCount + 1 })}
-                  className="w-12 h-12 rounded-full bg-green-500 text-white text-xl font-bold hover:bg-green-600 transition-all"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* Active Status */}
-            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="text-sm font-semibold text-gray-700">Start as Active</label>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Make your profile visible immediately
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
-                  className={`relative inline-flex h-11 w-20 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    formData.isActive 
-                      ? 'bg-green-500 focus:ring-green-500' 
-                      : 'bg-gray-300 focus:ring-gray-400'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-9 w-9 transform rounded-full bg-white shadow-lg transition-transform ${
-                      formData.isActive ? 'translate-x-10' : 'translate-x-1'
-                    }`}
+            {/* Swipe Count - Only for Swipers */}
+            {formData.userType === 'swiper' && (
+              <div>
+                <label htmlFor="swipeCount" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Initial Swipe Count *
+                </label>
+                <div className="flex items-center space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, swipeCount: Math.max(0, formData.swipeCount - 1) })}
+                    className="w-12 h-12 rounded-full bg-red-500 text-white text-xl font-bold hover:bg-red-600 transition-all"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    id="swipeCount"
+                    min="0"
+                    value={formData.swipeCount}
+                    onChange={(e) => setFormData({ ...formData, swipeCount: Math.max(0, parseInt(e.target.value) || 0) })}
+                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-center text-3xl font-bold focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-purple-600"
                   />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, swipeCount: formData.swipeCount + 1 })}
+                    className="w-12 h-12 rounded-full bg-green-500 text-white text-xl font-bold hover:bg-green-600 transition-all"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Active Status - Only for Swipers */}
+            {formData.userType === 'swiper' && (
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Start as Active</label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Make your profile visible immediately
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
+                    className={`relative inline-flex h-11 w-20 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      formData.isActive 
+                        ? 'bg-green-500 focus:ring-green-500' 
+                        : 'bg-gray-300 focus:ring-gray-400'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-9 w-9 transform rounded-full bg-white shadow-lg transition-transform ${
+                        formData.isActive ? 'translate-x-10' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Submit Button */}
             <div className="pt-4">

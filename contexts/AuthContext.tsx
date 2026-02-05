@@ -55,7 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    
+    // Check if email ends with @uci.edu
+    const email = result.user.email;
+    if (!email || !email.endsWith('@uci.edu')) {
+      await firebaseSignOut(auth);
+      throw new Error('Only UCI email addresses (@uci.edu) are allowed');
+    }
   };
 
   const signOut = async () => {

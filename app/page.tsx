@@ -23,6 +23,7 @@ export default function Home() {
     if (user) {
       loadUserProfile();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const loadUsers = async () => {
@@ -79,6 +80,9 @@ export default function Home() {
   };
 
   const filteredUsers = users.filter((u) => {
+    // Only show swipers (people offering swipes)
+    if (u.userType === 'swiped') return false;
+    
     if (filter === 'active') return u.isActive;
     if (filter === 'inactive') return !u.isActive;
     return true;
@@ -99,8 +103,8 @@ export default function Home() {
           </p>
         </div>
 
-        {/* User Quick Controls */}
-        {user && userProfile && (
+        {/* User Quick Controls - Only for Swipers */}
+        {user && userProfile && userProfile.userType === 'swiper' && (
           <div className="bg-white rounded-xl p-6 mb-10 max-w-2xl mx-auto border border-gray-200 shadow-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Quick Controls</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -126,9 +130,9 @@ export default function Home() {
                 <button
                   onClick={handleToggleActive}
                   disabled={updating}
-                  className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-all ${
+                  className={`w-full py-2 px-4 rounded-lg font-medium text-sm ${
                     userProfile.isActive
-                      ? 'bg-green-500 text-white hover:bg-green-600 animate-pulse'
+                      ? 'bg-green-500 text-white hover:bg-green-600 '
                       : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                   } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
@@ -168,7 +172,7 @@ export default function Home() {
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              Active <span className="text-xs opacity-75">({users.filter((u) => u.isActive).length})</span>
+              Active <span className="text-xs opacity-75">({users.filter((u) => u.userType === 'swiper' && u.isActive).length})</span>
             </button>
             <button
               onClick={() => setFilter('all')}
@@ -178,7 +182,7 @@ export default function Home() {
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              All <span className="text-xs opacity-75">({users.length})</span>
+              All <span className="text-xs opacity-75">({users.filter((u) => u.userType === 'swiper').length})</span>
             </button>
             <button
               onClick={() => setFilter('inactive')}
@@ -188,7 +192,7 @@ export default function Home() {
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              Inactive <span className="text-xs opacity-75">({users.filter((u) => !u.isActive).length})</span>
+              Inactive <span className="text-xs opacity-75">({users.filter((u) => u.userType === 'swiper' && !u.isActive).length})</span>
             </button>
           </div>
         </div>

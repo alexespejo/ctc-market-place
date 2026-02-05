@@ -1,4 +1,5 @@
 export type DiningHall = 'Brandywine' | 'Anteatery';
+export type UserType = 'swiper' | 'swiped';
 
 export interface UserProfile {
   id: string;
@@ -7,6 +8,7 @@ export interface UserProfile {
   phone?: string;
   photoURL?: string;
   diningHall: DiningHall;
+  userType: UserType;
   swipeCount: number;
   isActive: boolean;
   createdAt: Date;
@@ -18,6 +20,7 @@ export interface UserProfileInput {
   phone?: string;
   photoURL?: string;
   diningHall: DiningHall;
+  userType: UserType;
   swipeCount: number;
   isActive: boolean;
 }

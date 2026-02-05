@@ -4,6 +4,7 @@ import { UserProfile } from '@/lib/types';
 
 interface UserCardProps {
   user: UserProfile;
+  isViewerSignedIn?: boolean;
 }
 
 const formatPhoneNumber = (phone: string) => {
@@ -14,7 +15,7 @@ const formatPhoneNumber = (phone: string) => {
   return phone;
 };
 
-export default function UserCard({ user }: UserCardProps) {
+export default function UserCard({ user, isViewerSignedIn = false }: UserCardProps) {
   return (
     <div className={`bento-card overflow-hidden relative ${!user.isActive ? 'opacity-60' : ''}`}>
       {/* Unavailable chip for inactive users */}
@@ -91,7 +92,11 @@ export default function UserCard({ user }: UserCardProps) {
           style={{ color: 'var(--muted)' }}
         >
           <span className="text-base">📞</span>
-          <span className="text-sm font-medium">{formatPhoneNumber(user.phone)}</span>
+          {isViewerSignedIn ? (
+            <span className="text-sm font-medium">{formatPhoneNumber(user.phone)}</span>
+          ) : (
+            <span className="text-sm font-medium italic">Sign in to view</span>
+          )}
         </div>
 
         {/* Details Row */}

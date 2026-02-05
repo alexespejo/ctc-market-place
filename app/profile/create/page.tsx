@@ -73,10 +73,19 @@ export default function CreateProfilePage() {
     try {
       const photoURL = user.photoURL || formData.photoURL;
 
-      await createOrUpdateUserProfile(user.uid, user.email || '', {
-        ...formData,
+      // Clean the form data to remove undefined values
+      const cleanedData = {
+        displayName: formData.displayName,
+        phone: formData.phone,
         photoURL,
-      });
+        diningHall: formData.diningHall,
+        userType: formData.userType,
+        swipeCount: formData.swipeCount,
+        isActive: formData.isActive,
+        ...(formData.paymentRate !== undefined && { paymentRate: formData.paymentRate }),
+      };
+
+      await createOrUpdateUserProfile(user.uid, user.email || '', cleanedData);
       router.push('/profile');
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -359,11 +368,11 @@ export default function CreateProfilePage() {
                   >
                     Initial Swipe Count *
                   </label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4">
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, swipeCount: Math.max(0, formData.swipeCount - 1) })}
-                      className="w-14 h-14 rounded-2xl bg-red-500 text-white text-2xl font-bold hover:bg-red-600 transition-all shadow-sm active:scale-95"
+                      className="w-14 h-14 sm:w-14 sm:h-14 rounded-2xl bg-red-500 text-white text-2xl font-bold hover:bg-red-600 active:bg-red-700 transition-all shadow-md active:scale-95 flex-shrink-0 touch-manipulation"
                     >
                       −
                     </button>
@@ -373,11 +382,12 @@ export default function CreateProfilePage() {
                       min="0"
                       value={formData.swipeCount}
                       onChange={(e) => setFormData({ ...formData, swipeCount: Math.max(0, parseInt(e.target.value) || 0) })}
-                      className="flex-1 px-4 py-4 border-2 rounded-xl text-center text-3xl font-serif font-bold focus:ring-2 focus:border-transparent outline-none transition"
+                      className="flex-1 min-w-0 px-4 py-4 border-2 rounded-xl text-center text-3xl font-serif font-bold focus:ring-2 focus:border-transparent outline-none transition touch-manipulation"
                       style={{
                         backgroundColor: 'var(--paper)',
                         borderColor: 'var(--border)',
-                        color: 'var(--accent)'
+                        color: 'var(--accent)',
+                        height: '56px'
                       }}
                       onFocus={(e) => e.target.style.borderColor = 'var(--accent)'}
                       onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
@@ -385,7 +395,7 @@ export default function CreateProfilePage() {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, swipeCount: formData.swipeCount + 1 })}
-                      className="w-14 h-14 rounded-2xl bg-emerald-500 text-white text-2xl font-bold hover:bg-emerald-600 transition-all shadow-sm active:scale-95"
+                      className="w-14 h-14 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500 text-white text-2xl font-bold hover:bg-emerald-600 active:bg-emerald-700 transition-all shadow-md active:scale-95 flex-shrink-0 touch-manipulation"
                     >
                       +
                     </button>

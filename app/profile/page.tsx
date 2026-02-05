@@ -12,6 +12,14 @@ import {
 import { UserProfile, DiningHall } from '@/lib/types';
 import Navbar from '@/components/Navbar';
 
+const formatPhoneNumber = (phone: string) => {
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  }
+  return phone;
+};
+
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -29,6 +37,7 @@ export default function ProfilePage() {
     if (user) {
       loadProfile();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const loadProfile = async () => {
@@ -137,11 +146,10 @@ export default function ProfilePage() {
               )}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-1">{profile.displayName}</h2>
-                {profile.phone && (
-                  <p className="text-gray-600 text-sm">
-                    <span className="font-semibold">Phone:</span> {profile.phone}
-                  </p>
-                )}
+                <p className="text-gray-700 text-base flex items-center gap-2">
+                  <span className="text-lg">📞</span>
+                  <span className="font-semibold">{formatPhoneNumber(profile.phone)}</span>
+                </p>
               </div>
             </div>
 
@@ -177,33 +185,35 @@ export default function ProfilePage() {
             )}
 
             {/* Dining Hall Selection */}
-            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Nearest Dining Hall</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => handleDiningHallChange('Brandywine')}
-                  disabled={updating}
-                  className={`p-4 rounded-lg font-semibold transition-all border-2 ${
-                    profile.diningHall === 'Brandywine'
-                      ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  🏢 Brandywine
-                </button>
-                <button
-                  onClick={() => handleDiningHallChange('Anteatery')}
-                  disabled={updating}
-                  className={`p-4 rounded-lg font-semibold transition-all border-2 ${
-                    profile.diningHall === 'Anteatery'
-                      ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  🍽️ Anteatery
-                </button>
+            {profile.userType === 'swiper' && (
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Nearest Dining Hall</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => handleDiningHallChange('Brandywine')}
+                    disabled={updating}
+                    className={`p-4 rounded-lg font-semibold transition-all border-2 ${
+                      profile.diningHall === 'Brandywine'
+                        ? 'bg-purple-600 text-white border-purple-600'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100'
+                    } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    🏢 Brandywine
+                  </button>
+                  <button
+                    onClick={() => handleDiningHallChange('Anteatery')}
+                    disabled={updating}
+                    className={`p-4 rounded-lg font-semibold transition-all border-2 ${
+                      profile.diningHall === 'Anteatery'
+                        ? 'bg-purple-600 text-white border-purple-600'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100'
+                    } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    🍽️ Anteatery
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* User Type Badge */}
             <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 text-center">
@@ -223,31 +233,51 @@ export default function ProfilePage() {
 
             {/* Swipe Counter - Only for Swipers */}
             {profile.userType === 'swiper' && (
-              <div className="bg-purple-50 rounded-lg p-8 border border-purple-100">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Available Meal Swipes</h3>
-                <div className="flex items-center justify-center space-x-6 sm:space-x-8">
-                  <button
-                    onClick={() => handleSwipeChange(-1)}
-                    disabled={updating || profile.swipeCount === 0}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500 text-white text-2xl sm:text-3xl font-bold hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
-                  >
-                    −
-                  </button>
-                  <div className="text-center min-w-[120px]">
-                    <div className="text-6xl sm:text-7xl font-bold text-purple-600">
-                      {profile.swipeCount}
+              <>
+                <div className="bg-purple-50 rounded-lg p-8 border border-purple-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Available Meal Swipes</h3>
+                  <div className="flex items-center justify-center space-x-6 sm:space-x-8">
+                    <button
+                      onClick={() => handleSwipeChange(-1)}
+                      disabled={updating || profile.swipeCount === 0}
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500 text-white text-2xl sm:text-3xl font-bold hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                    >
+                      −
+                    </button>
+                    <div className="text-center min-w-[120px]">
+                      <div className="text-6xl sm:text-7xl font-bold text-purple-600">
+                        {profile.swipeCount}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-2 font-medium">Swipes</div>
                     </div>
-                    <div className="text-sm text-gray-600 mt-2 font-medium">Swipes</div>
+                    <button
+                      onClick={() => handleSwipeChange(1)}
+                      disabled={updating}
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500 text-white text-2xl sm:text-3xl font-bold hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                    >
+                      +
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleSwipeChange(1)}
-                    disabled={updating}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500 text-white text-2xl sm:text-3xl font-bold hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
-                  >
-                    +
-                  </button>
                 </div>
-              </div>
+
+                {/* Payment Rate Display */}
+                <div className="bg-green-50 rounded-lg p-6 border border-green-100 text-center">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Payment Rate</h3>
+                  {profile.paymentRate ? (
+                    <div className="text-4xl font-bold text-green-600">
+                      ${profile.paymentRate.toFixed(2)}
+                      <span className="text-base font-normal text-gray-600 ml-2">per swipe</span>
+                    </div>
+                  ) : (
+                    <div className="text-2xl font-semibold text-gray-500">
+                      Free
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-500 mt-2">
+                    Edit in profile settings to change
+                  </p>
+                </div>
+              </>
             )}
 
             {/* Edit Profile Button */}

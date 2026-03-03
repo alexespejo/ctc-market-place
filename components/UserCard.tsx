@@ -47,14 +47,16 @@ export default function UserCard({ user, isViewerSignedIn = false }: UserCardPro
         ></div>
         
         <div className="relative flex flex-col items-center">
-          {user.photoURL ? (
+          {!isViewerSignedIn ? (
+            <div className="shimmer w-24 h-24 rounded-full border-4 border-white shadow-lg" />
+          ) : user.photoURL ? (
             <img
               src={user.photoURL}
               alt={user.displayName}
               className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
             />
           ) : (
-            <div 
+            <div
               className="w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow-lg"
               style={{ backgroundColor: 'var(--accent)' }}
             >
@@ -79,15 +81,29 @@ export default function UserCard({ user, isViewerSignedIn = false }: UserCardPro
       {/* Info Section */}
       <div className="p-6 pt-4 space-y-4">
         {/* Name */}
-        <h3 
+        <h3
           className="font-serif text-2xl font-semibold text-center -tracking-tight"
           style={{ color: 'var(--foreground)' }}
         >
-          {user.displayName}
+          {isViewerSignedIn ? (
+            user.displayName
+          ) : (
+            <span
+              className="inline-block rounded"
+              style={{
+                backgroundColor: 'var(--border)',
+                color: 'transparent',
+                userSelect: 'none',
+                minWidth: '8rem',
+              }}
+            >
+              ████████
+            </span>
+          )}
         </h3>
 
         {/* Phone */}
-        <div 
+        <div
           className="flex items-center justify-center gap-2"
           style={{ color: 'var(--muted)' }}
         >
@@ -95,7 +111,17 @@ export default function UserCard({ user, isViewerSignedIn = false }: UserCardPro
           {isViewerSignedIn ? (
             <span className="text-sm font-medium">{formatPhoneNumber(user.phone)}</span>
           ) : (
-            <span className="text-sm font-medium italic">Sign in to view</span>
+            <span
+              className="text-sm inline-block rounded"
+              style={{
+                backgroundColor: 'var(--border)',
+                color: 'transparent',
+                userSelect: 'none',
+                minWidth: '7rem',
+              }}
+            >
+              ██████████
+            </span>
           )}
         </div>
 

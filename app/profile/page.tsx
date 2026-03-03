@@ -183,9 +183,10 @@ export default function ProfilePage() {
          </span>
         </div>
        )}
-       <div className="flex-1 min-w-0">
-        <h2 className="font-serif text-3xl font-semibold text-[--foreground] mb-2 tracking-tight">
-         {profile.displayName}
+       <div className="flex-1 min-w-0 pr-12 sm:pr-0">
+        <h2 className="font-serif text-xl sm:text-3xl font-semibold mb-2 tracking-tight" style={{ color: "var(--foreground)" }}>
+         <span className="sm:hidden">{profile.displayName.split(" ")[0]}</span>
+         <span className="hidden sm:inline">{profile.displayName}</span>
         </h2>
         <p className="text-sm text-[--muted] mb-3">{profile.email}</p>
         <div className="flex items-center gap-2 text-[--foreground]">
@@ -228,22 +229,24 @@ export default function ProfilePage() {
          <button
           onClick={() => handleDiningHallChange("Brandywine")}
           disabled={updating}
-          className={`p-5 rounded-xl font-semibold transition-all border-2 ${
+          className={`p-5 rounded-xl font-semibold transition-all border-2 ${updating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+          style={
            profile.diningHall === "Brandywine"
-            ? "bg-[--accent] text-white border-[--accent] shadow-md"
-            : "bg-[--paper] text-[--foreground] border-[--border] hover:border-[--accent-light]"
-          } ${updating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            ? { backgroundColor: "var(--accent)", color: "white", borderColor: "var(--accent)", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" }
+            : { backgroundColor: "var(--paper)", color: "var(--foreground)", borderColor: "var(--border)" }
+          }
          >
           🏢 Brandywine
          </button>
          <button
           onClick={() => handleDiningHallChange("Anteatery")}
           disabled={updating}
-          className={`p-5 rounded-xl font-semibold transition-all border-2 ${
+          className={`p-5 rounded-xl font-semibold transition-all border-2 ${updating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+          style={
            profile.diningHall === "Anteatery"
-            ? "bg-[--accent] text-white border-[--accent] shadow-md"
-            : "bg-[--paper] text-[--foreground] border-[--border] hover:border-[--accent-light]"
-          } ${updating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            ? { backgroundColor: "var(--accent)", color: "white", borderColor: "var(--accent)", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" }
+            : { backgroundColor: "var(--paper)", color: "var(--foreground)", borderColor: "var(--border)" }
+          }
          >
           🍽️ Anteatery
          </button>

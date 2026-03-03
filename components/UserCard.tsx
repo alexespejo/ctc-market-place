@@ -1,6 +1,7 @@
 'use client';
 
 import { UserProfile } from '@/lib/types';
+import { getNextAvailableLabel } from '@/lib/availability';
 
 interface UserCardProps {
   user: UserProfile;
@@ -16,20 +17,47 @@ const formatPhoneNumber = (phone: string) => {
 };
 
 export default function UserCard({ user, isViewerSignedIn = false }: UserCardProps) {
+  const nextAvailable = !user.isActive && user.availability
+    ? getNextAvailableLabel(user.availability)
+    : null;
+
   return (
     <div className={`bento-card overflow-hidden relative ${!user.isActive ? 'opacity-60' : ''}`}>
       {/* Unavailable chip for inactive users */}
       {!user.isActive && (
-        <div className="absolute top-4 right-4 z-10">
-          <div 
-            className="px-3 py-1.5 rounded-full text-xs font-semibold shadow-md"
-            style={{ 
+        <div className="absolute top-4 right-4 z-10 group">
+          <div
+            className="px-3 py-1.5 rounded-full text-xs font-semibold shadow-md cursor-default"
+            style={{
               backgroundColor: 'rgba(107, 114, 128, 0.9)',
-              color: 'white'
+              color: 'white',
             }}
           >
             Unavailable
           </div>
+          {/* Next-available tooltip */}
+          {nextAvailable && (
+            <div
+              className="absolute top-full right-0 mt-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20"
+              style={{
+                backgroundColor: 'var(--foreground)',
+                color: 'var(--background)',
+              }}
+            >
+              Available {nextAvailable}
+            </div>
+          )}
+          {!nextAvailable && user.availability && (
+            <div
+              className="absolute top-full right-0 mt-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20"
+              style={{
+                backgroundColor: 'var(--foreground)',
+                color: 'var(--background)',
+              }}
+            >
+              No upcoming availability
+            </div>
+          )}
         </div>
       )}
       

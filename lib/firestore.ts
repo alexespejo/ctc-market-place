@@ -16,7 +16,15 @@ import { UserProfile, UserProfileInput } from './types';
 const USERS_COLLECTION = 'users';
 
 // Convert Firestore data to UserProfile
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const convertToUserProfile = (id: string, data: any): UserProfile => {
+  // Firestore stores object keys as strings; restore numeric day keys
+  const availability = data.availability
+    ? Object.fromEntries(
+        Object.entries(data.availability).map(([k, v]) => [parseInt(k), v as number[]])
+      )
+    : undefined;
+
   return {
     id,
     email: data.email,
@@ -28,6 +36,7 @@ const convertToUserProfile = (id: string, data: any): UserProfile => {
     swipeCount: data.swipeCount || 0,
     paymentRate: data.paymentRate,
     isActive: data.isActive ?? true,
+    availability,
     createdAt: data.createdAt?.toDate() || new Date(),
     updatedAt: data.updatedAt?.toDate() || new Date(),
   };
@@ -116,6 +125,15 @@ export async function toggleActiveStatus(userId: string, isActive: boolean): Pro
   const userRef = doc(db, USERS_COLLECTION, userId);
   await updateDoc(userRef, {
     isActive,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+// Update availability schedule
+export async function updateAvailability(userId: string, availability: Record<number, number[]>): Promise<void> {
+  const userRef = doc(db, USERS_COLLECTION, userId);
+  await updateDoc(userRef, {
+    availability,
     updatedAt: Timestamp.now(),
   });
 }

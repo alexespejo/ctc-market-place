@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserProfile, createOrUpdateUserProfile } from '@/lib/firestore';
-import { DiningHall, UserType } from '@/lib/types';
+import { DiningHall, UserType, AvailabilitySchedule } from '@/lib/types';
 import Navbar from '@/components/Navbar';
+import AvailabilityScheduler from '@/components/AvailabilityScheduler';
 
 export default function CreateProfilePage() {
   const { user, loading: authLoading } = useAuth();
@@ -22,6 +23,7 @@ export default function CreateProfilePage() {
     swipeCount: 0,
     paymentRate: undefined as number | undefined,
     isActive: true,
+    availability: {} as AvailabilitySchedule,
   });
 
   useEffect(() => {
@@ -50,6 +52,7 @@ export default function CreateProfilePage() {
           swipeCount: profile.swipeCount,
           paymentRate: profile.paymentRate,
           isActive: profile.isActive,
+          availability: profile.availability ?? {},
         });
       } else {
         setFormData(prev => ({
@@ -82,6 +85,7 @@ export default function CreateProfilePage() {
         userType: formData.userType,
         swipeCount: formData.swipeCount,
         isActive: formData.isActive,
+        availability: formData.availability,
         ...(formData.paymentRate !== undefined && { paymentRate: formData.paymentRate }),
       };
 
@@ -441,6 +445,25 @@ export default function CreateProfilePage() {
                   </p>
                 </div>
               </>
+            )}
+
+            {/* Availability Schedule - Only for Swipers */}
+            {formData.userType === 'swiper' && (
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: 'var(--foreground)' }}
+                >
+                  Typical Availability
+                </label>
+                <p className="text-xs mb-4" style={{ color: 'var(--muted)' }}>
+                  Your active status will automatically update based on this schedule.
+                </p>
+                <AvailabilityScheduler
+                  value={formData.availability}
+                  onChange={(availability) => setFormData({ ...formData, availability })}
+                />
+              </div>
             )}
 
             {/* Active Status - Only for Swipers */}

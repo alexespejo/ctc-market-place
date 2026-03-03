@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getAllUsers, getUserProfile, updateDiningHall, toggleActiveStatus } from '@/lib/firestore';
+import { isCurrentlyAvailable } from '@/lib/availability';
 import { UserProfile, DiningHall } from '@/lib/types';
 import UserCard from '@/components/UserCard';
 import Navbar from '@/components/Navbar';
@@ -41,7 +42,17 @@ export default function Home() {
     if (!user) return;
     try {
       const profile = await getUserProfile(user.uid);
+      if (profile?.userType === 'swiper' && profile.availability) {
+        const shouldBeActive = isCurrentlyAvailable(profile.availability);
+        if (shouldBeActive !== profile.isActive) {
+          await toggleActiveStatus(user.uid, shouldBeActive);
+          profile.isActive = shouldBeActive;
+        }
+      }
       setUserProfile(profile);
+      if (profile?.userType === 'swiper' && profile.availability) {
+        loadUsers();
+      }
     } catch (error) {
       console.error('Error loading user profile:', error);
     }

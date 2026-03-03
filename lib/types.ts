@@ -1,3 +1,6 @@
+import type { AvailabilitySchedule } from './availability';
+
+export type { AvailabilitySchedule };
 export type DiningHall = 'Brandywine' | 'Anteatery';
 export type UserType = 'swiper' | 'swiped';
 
@@ -12,6 +15,7 @@ export interface UserProfile {
   swipeCount: number;
   paymentRate?: number;
   isActive: boolean;
+  availability?: AvailabilitySchedule;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,4 +29,5 @@ export interface UserProfileInput {
   swipeCount: number;
   paymentRate?: number;
   isActive: boolean;
+  availability?: AvailabilitySchedule;
 }

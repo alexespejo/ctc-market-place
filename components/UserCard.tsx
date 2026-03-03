@@ -6,6 +6,7 @@ import { getNextAvailableLabel } from '@/lib/availability';
 interface UserCardProps {
   user: UserProfile;
   isViewerSignedIn?: boolean;
+  onClick?: () => void;
 }
 
 const formatPhoneNumber = (phone: string) => {
@@ -16,13 +17,16 @@ const formatPhoneNumber = (phone: string) => {
   return phone;
 };
 
-export default function UserCard({ user, isViewerSignedIn = false }: UserCardProps) {
+export default function UserCard({ user, isViewerSignedIn = false, onClick }: UserCardProps) {
   const nextAvailable = !user.isActive && user.availability
     ? getNextAvailableLabel(user.availability)
     : null;
 
   return (
-    <div className={`bento-card overflow-hidden relative ${!user.isActive ? 'opacity-60' : ''}`}>
+    <div
+      className={`bento-card overflow-hidden relative ${!user.isActive ? 'opacity-60' : ''} ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={onClick}
+    >
       {/* Unavailable chip for inactive users */}
       {!user.isActive && (
         <div className="absolute top-4 right-4 z-10 group">

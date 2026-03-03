@@ -5,6 +5,7 @@ import { getAllUsers, getUserProfile, updateDiningHall, toggleActiveStatus } fro
 import { isCurrentlyAvailable } from '@/lib/availability';
 import { UserProfile, DiningHall } from '@/lib/types';
 import UserCard from '@/components/UserCard';
+import UserProfileDialog from '@/components/UserProfileDialog';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -14,6 +15,7 @@ export default function Home() {
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -241,11 +243,19 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredUsers.map((userData) => (
-              <UserCard key={userData.id} user={userData} isViewerSignedIn={!!user} />
+              <UserCard key={userData.id} user={userData} isViewerSignedIn={!!user} onClick={() => setSelectedUser(userData)} />
             ))}
           </div>
         )}
       </main>
+
+      {selectedUser && (
+        <UserProfileDialog
+          user={selectedUser}
+          isViewerSignedIn={!!user}
+          onClose={() => setSelectedUser(null)}
+        />
+      )}
     </div>
   );
 }
